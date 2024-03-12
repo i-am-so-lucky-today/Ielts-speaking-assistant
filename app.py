@@ -2,6 +2,7 @@
 from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
 import torch
 import streamlit as st
+from interface import GenerationConfig, generate_interactive
 
 from modelscope import snapshot_download
 
@@ -41,35 +42,48 @@ def main():
 
     st.title("🙋 Ielts Speaking Assistant")
     st.caption("A streamlit chatbot powered by InternLM2 QLora")
-    # generation_config = prepare_generation_config()
+
+    generation_config = prepare_generation_config()
     # 侧边栏
-    with st.sidebar:
-        max_length = st.slider("Max Length", min_value=32, max_value=2048, value=2048)
-        top_p = st.slider("Top P", 0.0, 1.0, 0.8, step=0.01)
-        temperature = st.slider("Temperature", 0.0, 1.0, 0.7, step=0.01)
-        st.button("Clear Chat History", on_click=on_btn_click)
+    # with st.sidebar:
+    #     max_length = st.slider("Max Length", min_value=32, max_value=2048, value=2048)
+    #     top_p = st.slider("Top P", 0.0, 1.0, 0.8, step=0.01)
+    #     temperature = st.slider("Temperature", 0.0, 1.0, 0.7, step=0.01)
+    #     st.button("Clear Chat History", on_click=on_btn_click)
 
     # Initialize chat history
     if "messages" not in st.session_state:
-        st.session_state["messages"] = []
+        st.session_state.messages = []
     
-    # 遍历session_state中的所有消息，并显示在聊天界面上
-    for msg in st.session_state.messages:
-        st.chat_message("user").write(msg[0])
-        st.chat_message("assistant").write(msg[1])
+    # Display chat messages from history on app rerun
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"], avatar=message.get("avatar")):
+            st.markdown(message["content"])
 
-    # 如果用户在聊天输入框中输入了内容，则执行以下操作
-    if prompt := st.chat_input():
-        # 在聊天界面上显示用户的输入
-        st.chat_message("user").write(prompt)
-        # 构建输入     
-        response, history = model.chat(tokenizer, prompt, meta_instruction=system_prompt, history=st.session_state.messages)
-        # 将模型的输出添加到session_state中的messages列表中
-        st.session_state.messages.append((prompt, response))
-        # 在聊天界面上显示模型的输出
-        st.chat_message("assistant").write(response)
+    # Accept user input
+    if prompt := st.chat_input("What is up?"):
+        # Display user message in chat message container
+        with st.chat_message("user", avatar=user_avator):
+            st.markdown(prompt)
+        real_prompt = combine_history(prompt)
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": prompt, "avatar": user_avator})
 
-    return
+        with st.chat_message("robot", avatar=robot_avator):
+            message_placeholder = st.empty()
+            for cur_response in generate_interactive(
+                model=model,
+                tokenizer=tokenizer,
+                prompt=real_prompt,
+                additional_eos_token_id=103028,
+                **asdict(generation_config),
+            ):
+                # Display robot response in chat message container
+                message_placeholder.markdown(cur_response + "▌")
+            message_placeholder.markdown(cur_response)
+        # Add robot response to chat history
+        st.session_state.messages.append({"role": "robot", "content": cur_response, "avatar": robot_avator})
+        torch.cuda.empty_cache()
 
 if __name__ == "__main__":
     main()
