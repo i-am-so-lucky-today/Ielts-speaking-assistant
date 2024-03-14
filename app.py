@@ -4,16 +4,16 @@ from dataclasses import asdict
 import streamlit as st
 import torch
 
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModel
 from transformers.utils import logging
 
 from interface import GenerationConfig, generate_interactive
-from openxlab.model import download
-
-logger = logging.get_logger(__name__)
-
-download(model_repo='LocknLock/ft-ietls-speaking-assistant', 
-        output='ietls_model')
+import os
+base_path = './ft-ietls-speaking-assistant'
+os.system('apt install git')
+os.system('apt install git-lfs')
+os.system(f'git clone https://code.openxlab.org.cn/LocknLock/ft-ietls-speaking-assistant.git {base_path}')
+os.system(f'cd {base_path} && git lfs pull')
 
 def on_btn_click():
     del st.session_state.messages
@@ -22,11 +22,11 @@ def on_btn_click():
 @st.cache_resource
 def load_model():
     model = (
-        AutoModelForCausalLM.from_pretrained('ietls_model', trust_remote_code=True)
+        AutoModelForCausalLM.from_pretrained(base_path, trust_remote_code=True)
         .to(torch.bfloat16)
         .cuda()
     )
-    tokenizer = AutoTokenizer.from_pretrained('ietls_model', trust_remote_code=True)
+    tokenizer = AutoTokenizer.from_pretrained(base_path, trust_remote_code=True)
     model.eval()
     return model, tokenizer
 
