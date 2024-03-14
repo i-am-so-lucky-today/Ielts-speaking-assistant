@@ -8,6 +8,9 @@
 
 ## openxlab模型
 
+模型链接[ielts-speaking-assistant model](https://openxlab.org.cn/models/detail/LocknLock/ft-ietls-speaking-assistant/tree/main)
+
+应用链接 [ielts-speaking-assistant](https://openxlab.org.cn/apps/detail/lumine/ielts-speaking-assistant)
 
 ## 数据集
 
@@ -44,8 +47,6 @@
 
 进一步清洗数据获得最终的多轮对话数据集，用于后续指令微调。
 
-
-## 增量预训练
 
 
 ## 微调

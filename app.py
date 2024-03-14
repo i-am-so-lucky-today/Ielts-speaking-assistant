@@ -13,9 +13,8 @@ from modelscope import snapshot_download
 
 logger = logging.get_logger(__name__) 
 
-# model_id = 'LocknLock/ft-ietls-speaking-assistant' 
-# mode_name_or_path = snapshot_download(model_id, revision='master')
-mode_name_or_path = '/root/ft-ietls-speaking-examiner/internlm2-chat-7b'
+model_id = 'LocknLock/ft-ietls-speaking-assistant' 
+mode_name_or_path = snapshot_download(model_id, revision='master')
 
 def on_btn_click():
     del st.session_state.messages
@@ -24,11 +23,11 @@ def on_btn_click():
 @st.cache_resource
 def load_model():
     model = (
-        AutoModelForCausalLM.from_pretrained("internlm/internlm-chat-7b", trust_remote_code=True)
+        AutoModelForCausalLM.from_pretrained(mode_name_or_path, trust_remote_code=True)
         .to(torch.bfloat16)
         .cuda()
     )
-    tokenizer = AutoTokenizer.from_pretrained("internlm/internlm-chat-7b", trust_remote_code=True)
+    tokenizer = AutoTokenizer.from_pretrained(mode_name_or_path, trust_remote_code=True)
     model.eval()
     return model, tokenizer
 
