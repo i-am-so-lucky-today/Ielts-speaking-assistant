@@ -8,13 +8,12 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from transformers.utils import logging
 
 from interface import GenerationConfig, generate_interactive
+from openxlab.model import download
 
-from modelscope import snapshot_download
+logger = logging.get_logger(__name__)
 
-logger = logging.get_logger(__name__) 
-
-model_id = 'LocknLock/ft-ietls-speaking-assistant' 
-mode_name_or_path = snapshot_download(model_id, revision='master')
+download(model_repo='LocknLock/ft-ietls-speaking-assistant', 
+        output='ietls_model')
 
 def on_btn_click():
     del st.session_state.messages
@@ -23,11 +22,11 @@ def on_btn_click():
 @st.cache_resource
 def load_model():
     model = (
-        AutoModelForCausalLM.from_pretrained(mode_name_or_path, trust_remote_code=True)
+        AutoModelForCausalLM.from_pretrained('ietls_model', trust_remote_code=True)
         .to(torch.bfloat16)
         .cuda()
     )
-    tokenizer = AutoTokenizer.from_pretrained(mode_name_or_path, trust_remote_code=True)
+    tokenizer = AutoTokenizer.from_pretrained('ietls_model', trust_remote_code=True)
     model.eval()
     return model, tokenizer
 
