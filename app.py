@@ -9,7 +9,7 @@ from transformers.utils import logging
 
 from interface import GenerationConfig, generate_interactive
 import os
-base_path = '/home/xlab-app-center/ietls_assistant'
+base_path = './ft-ietls-speaking-assistant'
 os.system('apt install git')
 os.system('apt install git-lfs')
 os.system(f'git clone https://code.openxlab.org.cn/LocknLock/ft-ietls-speaking-assistant.git {base_path}')
@@ -21,13 +21,9 @@ def on_btn_click():
 # 定义一个函数，用于获取模型和tokenizer
 @st.cache_resource
 def load_model():
-    model = (
-        AutoModelForCausalLM.from_pretrained(base_path, trust_remote_code=True)
-        .to(torch.bfloat16)
-        .cuda()
-    )
-    tokenizer = AutoTokenizer.from_pretrained(base_path, trust_remote_code=True)
-    model.eval()
+    tokenizer = AutoTokenizer.from_pretrained(base_path,trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained(base_path,trust_remote_code=True, torch_dtype=torch.float16).cuda()
+    # model.eval()
     return model, tokenizer
 
 def prepare_generation_config():
