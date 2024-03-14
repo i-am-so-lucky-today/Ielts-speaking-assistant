@@ -9,7 +9,7 @@ from transformers.utils import logging
 
 from interface import GenerationConfig, generate_interactive
 import os
-base_path = '/home/xlab-app-center/ft-ietls-speaking-assistant'
+base_path = '/home/xlab-app-center/ietls_assistant'
 os.system('apt install git')
 os.system('apt install git-lfs')
 os.system(f'git clone https://code.openxlab.org.cn/LocknLock/ft-ietls-speaking-assistant.git {base_path}')
