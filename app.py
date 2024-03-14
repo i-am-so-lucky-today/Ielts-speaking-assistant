@@ -8,6 +8,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, AutoModel
 from transformers.utils import logging
 
 from interface import GenerationConfig, generate_interactive
+# way1
 import os
 base_path = './ft-ietls-speaking-assistant'
 os.system('apt install git')
@@ -15,14 +16,20 @@ os.system('apt install git-lfs')
 os.system(f'git clone https://code.openxlab.org.cn/LocknLock/ft-ietls-speaking-assistant.git {base_path}')
 os.system(f'cd {base_path} && git lfs pull')
 
+# way 2
+from openxlab.model import download
+outpth = '/home/xlab-app-center/ietls_model'
+download(model_repo='LocknLock/ft-ietls-speaking-assistant', 
+        output=outpth)
+
 def on_btn_click():
     del st.session_state.messages
 
 # 定义一个函数，用于获取模型和tokenizer
 @st.cache_resource
 def load_model():
-    tokenizer = AutoTokenizer.from_pretrained(base_path,trust_remote_code=True)
-    model = AutoModelForCausalLM.from_pretrained(base_path,trust_remote_code=True, torch_dtype=torch.float16).cuda()
+    tokenizer = AutoTokenizer.from_pretrained(outpth,trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained(outpth,trust_remote_code=True, torch_dtype=torch.float16).cuda()
     # model.eval()
     return model, tokenizer
 
