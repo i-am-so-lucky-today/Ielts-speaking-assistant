@@ -1,6 +1,10 @@
-# Ielts-speaking-assistant
+![image](https://github.com/Sixdes/Ielts-speaking-assistant/assets/84364070/31befa01-3125-4599-99b7-c96f2bddffea)# Ielts-speaking-assistant
 
 ## 简介
+
+
+![Uploading IELTS COACH.png…]()
+
 
 基于YouTube、b站等相关雅思口语模拟考试以及真实测试视频， 通过InternLM2微调得到的雅思口语测试助手。雅思口语测试助手旨在帮助模拟雅思口语测试与课程学习。
 
